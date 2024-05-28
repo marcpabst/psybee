@@ -1,16 +1,16 @@
-"""A simple example experiment using the psychophysics_py library."""
+"""A simple example experiment using the psybee library."""
 
 import logging
 import os
 import time
 
 from .bubble_simulation import BubbleSimulation
-from psychophysics_py import MainLoop, ExperimentManager
-from psychophysics_py.audio import AudioDevice, FileStimulus
-from psychophysics_py.geometry import Circle, Rectangle, Pixels, ScreenWidth
-from psychophysics_py.events import EventKind
-from psychophysics_py.stimuli import GaborStimulus, ImageStimulus, SpriteStimulus
-from psychophysics_py.window import Window
+from psybee import MainLoop, ExperimentManager
+from psybee.audio import AudioDevice, FileStimulus
+from psybee.geometry import Circle, Rectangle, Pixels, ScreenWidth
+from psybee.events import EventKind
+from psybee.stimuli import GaborStimulus, ImageStimulus, SpriteStimulus
+from psybee.window import Window
 
 n_balls = 4
 n_init_steps = 10000

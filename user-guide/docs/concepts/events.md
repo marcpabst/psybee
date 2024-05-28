@@ -41,13 +41,13 @@ while True:
 ## Handling events with callbacks
 
 !!! warning
-    When using callbacks, make sure to keep the callback functions as short as possible. This is especially important when using the Python API, as long-running callback functions can lock the [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) and prevent other parts of the experiment from running. This might change in the future.
+    When using callbacks, make sure to keep the callback functions as short as possible. This is especially important when using the Python API, as long-running callback functions can lock the [GIL](https://wiki.python.org/moin/GlobalInterpreterLock) and prevent other parts of the experiment from running.
 
 A callback is a function that is called when an event occurs. You can register a callback function using the `add_event_handler` method on a `Window` object. You can also register a callback function on a `Stimulus` object, but certain limitations apply (see below). The callback function should take a single argument, which is an `Event` object. The `Event` object contains information about the event that occurred, such as the type of event, the key that was pressed, or the position of the mouse.
 
 ### Adding event handlers to windows
 
-You can add event handlers to windows by calling the `add_event_handler(event_type, callback)` method on a `Window` object. The `event_type` argument should be one of the values from the `EventType` enum, and the `callback` argument should be a function that takes an `Event` object as its only argument. The callback function will be called as soon as pobbile whenever an event of the specified type occurs.
+You can add event handlers to windows by calling the `add_event_handler(kind, callback)` method on a `Window` object. The `kind` argument should be one of the values from the `EventKind` enum, and the `callback` argument should be a function that takes an `Event` object as its only argument. The callback function will be called as soon as possible whenever an event of the specified kind occurs.
 
 Examples:
 

@@ -1,11 +1,11 @@
 [data-md-color-scheme="pybee"] {
-    --md-primary-fg-color: #ffdd00;
+    --md-primary-fg-color: #ffffff;
     --md-primary-fg-color--light: #000000;
-    --md-primary-fg-color--dark: #90030C;
+    --md-primary-fg-color--dark: #906803;
     --md-primary-bg-color: #000000;
 
-    --md-accent-fg-color: #723500;
-    --md-typeset-a-color: var(--md-accent-fg-color);
+    --md-accent-fg-color: #ffd500;
+    --md-typeset-a-color: var(--md-primary-fg-color--dark);
 
     --md-typeset-color: #000000;
 

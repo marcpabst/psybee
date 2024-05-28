@@ -1,0 +1,47 @@
+{% extends "main.html" %}
+{% block tabs %}
+{{ super() }}
+<style>
+    * {
+        --md-primary-fg-color: var(--md-accent-fg-color);
+    }
+
+    .md-header {
+        position: initial
+    }
+
+    .md-main__inner {
+        margin: 0
+    }
+
+    .md-content {
+        display: none;
+    }
+
+    .mdx-container {
+        background-color: var(--md-accent-fg-color);
+        background: linear-gradient(180deg, var(--md-accent-fg-color) 30%, rgb(255, 255, 255) 130%);
+    }
+
+    @media screen and (min-width:60em) {
+        .md-sidebar--secondary {
+            display: none
+        }
+    }
+
+    @media screen and (min-width:76.25em) {
+        .md-sidebar--primary {
+            display: none
+        }
+    }
+</style>
+<section class="mdx-container">
+    <div class="md-grid md-typeset">
+        <div class="mdx-hero" style="height: 40vh">
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% endblock %}

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "psychophysics",
-    "psychophysics-py", "ptest", "pywrap", "rapier2d-py",
+    "psybee", "psybee-py", 
+    "pywrap", "rapier2d-py",
 ]
