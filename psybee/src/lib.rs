@@ -279,7 +279,7 @@ impl MainLoop {
         let backend = wgpu::Backends::all();
 
         #[cfg(target_os = "windows")]
-        let backend = wgpu::Backends::GL;
+        let backend = wgpu::Backends::DX12;
 
         let instance_desc = wgpu::InstanceDescriptor { backends: backend,
                                                        // use defaults for the rest
@@ -446,7 +446,7 @@ impl MainLoop {
                                                   format: swapchain_format,
                                                   width: size.width,
                                                   height: size.height,
-                                                  present_mode: wgpu::PresentMode::Fifo,
+                                                  present_mode: wgpu::PresentMode::default(),
                                                   alpha_mode: swapchain_capabilities.alpha_modes[0],
                                                   view_formats: swapchain_view_format,
                                                   desired_maximum_frame_latency: 1 };
