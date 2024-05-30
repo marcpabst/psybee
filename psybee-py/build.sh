@@ -16,14 +16,14 @@ maturin build --target aarch64-apple-ios --release
 
 # unzip the wheel 
 export TARGET_DIR="/Users/marc/psybee/example_experiments/demo_app/build/demo_app/ios/xcode/DemoApp/app_packages.iphoneos"
-unzip -o ../target/wheels/psybee_py-0.1.0-cp38-abi3-ios_23_2_0_arm64.whl -d $TARGET_DIR
+unzip -o ../target/wheels/psybee-0.1.1-cp38-abi3-ios_23_2_0_arm64.whl -d $TARGET_DIR
 
 # rename psybee_py.cpython-39-darwin.so files to *.dylib and codesign them
-mv -f $TARGET_DIR/psybee_py/psybee_py.abi3.so $TARGET_DIR/psybee_py/psybee_py.abi3.dylib
+mv -f $TARGET_DIR/psybee/psybee.abi3.so $TARGET_DIR/psybee/psybee.abi3.dylib
 
-codesign --force --timestamp --sign 0801B5387CDC573AB560315B0C3D1C309906D961 $TARGET_DIR/psybee_py/psybee_py.abi3.dylib
-# # remove the signature
-#codesign --remove-signature $TARGET_DIR/psybee_py/psybee_py.abi3.dylib
+# codesign --force --timestamp --sign 0801B5387CDC573AB560315B0C3D1C309906D961 $TARGET_DIR/psybee/psybee.abi3.dylib
+# # # remove the signature
+codesign --remove-signature $TARGET_DIR/psybee/psybee.abi3.dylib
 
 
 

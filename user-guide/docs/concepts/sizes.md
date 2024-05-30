@@ -11,7 +11,7 @@ Most functions in psychopysics accept both numerical scalar values (such as `int
 Once you have brought the `PsyBee.size` module into your namespace, you can create `Size` values either by calling the constructor functions, ot by using the shorthand syntax. For example, you can create a `Size` value representing 100 pixels like this:
 
 ```python
-from PsyBee.size import px
+from psybee.size import px
 
 width = px(100) # using the constructor function, or
 width = 100*px # using the shorthand syntax
@@ -38,7 +38,7 @@ The following units are currently supported:
 You can add and subtract `Size` values, even if they not have the same units. You can also multiply and divide `Size` values by scalar values. For example:
 
 ```python
-from PsyBee.size import px, cm, sw
+from psybee.size import px, cm, sw
 
 width = 1*sw # full screen width
 left_margin = 2*cm # 2 centimeters
@@ -54,7 +54,7 @@ new_width = width - 2*left_margin # full screen width - margins
 You can convert `Size` values between units using the `to` method. You can then extract the numerical value of the converted size using the `value` attribute. For example:
 
 ```python
-from PsyBee.size import px, cm
+from psybee.size import px, cm
 
 width = 100*px
 width_cm = width.to(cm) # convert to centimeters

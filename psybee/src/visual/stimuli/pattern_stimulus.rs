@@ -13,10 +13,25 @@ use crate::visual::window::InternalWindowState;
 use crate::visual::Window;
 use crate::GPUState;
 
+#[derive(Clone, Copy, Debug)]
+pub enum LineStyle {
+    Solid,
+    Dashed,
+    Dotted,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct OutlineStyle {
+    pub color: [f32; 4],
+    pub width: f32,
+    pub linestyle: LineStyle,
+}
+
 #[derive(Clone, Debug)]
 pub struct PatternStimulus<P> {
     base_stimulus: BaseStimulus,
     pub pattern: Arc<Mutex<P>>,
+    pub outline: Arc<Mutex<Option<OutlineStyle>>>,
 }
 
 #[macro_export]
@@ -160,7 +175,8 @@ impl<P: FillPattern> PatternStimulus<P> {
         let fragment_shader_code = pattern.fragment_shader_code(window);
 
         Self { base_stimulus: BaseStimulus::new(window, geometry, &fragment_shader_code, texture_size, texture_data, &[uniform_buffer_data]),
-               pattern: Arc::new(Mutex::new(pattern)) }
+               pattern: Arc::new(Mutex::new(pattern)),
+               outline: Arc::new(Mutex::new(None)) }
     }
 
     pub fn set_pattern(&mut self, pattern: P) -> () {

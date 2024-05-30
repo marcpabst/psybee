@@ -17,7 +17,7 @@ import numpy as np
 # create an Iterator that simulates the movement of a stimulus
 class BubbleSimulation:
 
-    def __init__(self, n_balls=4):
+    def __init__(self, n_balls=4, width=1920, height=1080, n_init_steps=0):
         # set up the simulation
         self.speed = 0.0
         self.n_balls = n_balls
@@ -28,11 +28,11 @@ class BubbleSimulation:
 
         # create walls for a FHD screen, with (0,0) at the center
         walls_vertices = [
-            rapier2d_py.RealPoint(-960.0, -540.0),
-            rapier2d_py.RealPoint(960.0, -540.0),
-            rapier2d_py.RealPoint(960.0, 540.0),
-            rapier2d_py.RealPoint(-960.0, 540.0),
-            rapier2d_py.RealPoint(-960.0, -540.0),
+            rapier2d_py.RealPoint(-width / 2, -height / 2),
+            rapier2d_py.RealPoint(width / 2, -height / 2),
+            rapier2d_py.RealPoint(width / 2, height / 2),
+            rapier2d_py.RealPoint(-width / 2, height / 2),
+            rapier2d_py.RealPoint(-width / 2, -height / 2),
         ]
 
         wall_collider = rapier2d_py.Collider(
@@ -85,6 +85,10 @@ class BubbleSimulation:
         self.multibody_joint_set = rapier2d_py.MultibodyJointSet()
         self.ccd_solver = rapier2d_py.CCDSolver()
         self.query_pipeline = rapier2d_py.QueryPipeline()
+
+        # run the simulation for n_init_steps (call next() n_init_steps times)
+        for _ in range(n_init_steps):
+            next(self)
 
     def __iter__(self):
         return self

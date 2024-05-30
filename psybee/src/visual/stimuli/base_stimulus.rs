@@ -175,27 +175,20 @@ impl BaseStimulus {
 
         for (i, uniform_buffer_data) in uniform_buffers_data.iter().cloned().enumerate() {
             // create bind group layout entry
-            let uniform_buffer_bind_group_layout_entry = wgpu::BindGroupLayoutEntry {
-                binding: i as u32,
-                visibility: wgpu::ShaderStages::FRAGMENT,
-                ty: wgpu::BindingType::Buffer {
-                    ty: wgpu::BufferBindingType::Uniform,
-                    has_dynamic_offset: false,
-                    min_binding_size: None,
-                },
-                count: None,
-            };
+            let uniform_buffer_bind_group_layout_entry = wgpu::BindGroupLayoutEntry { binding: i as u32,
+                                                                                      visibility: wgpu::ShaderStages::FRAGMENT,
+                                                                                      ty: wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform,
+                                                                                                                      has_dynamic_offset: false,
+                                                                                                                      min_binding_size: None },
+                                                                                      count: None };
 
             // add the entry to the list of entries
             uniform_buffer_bind_group_layout_entries.push(uniform_buffer_bind_group_layout_entry);
 
             // create the buffer
-            let uniform_buffer =
-                device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                    label: None,
-                    contents: uniform_buffer_data.as_slice(),
-                    usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-                });
+            let uniform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor { label: None,
+                                                                                               contents: uniform_buffer_data.as_slice(),
+                                                                                               usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST });
 
             // add the buffer to the list of buffers
             uniforms_buffers.push(uniform_buffer);
@@ -205,12 +198,8 @@ impl BaseStimulus {
         // uniform_buffers
         let uniform_buffers_bind_group_entries = uniforms_buffers.iter()
                                                                  .enumerate()
-                                                                 .map(|(i, uniform_buffer)| {
-                                                                     wgpu::BindGroupEntry {
-                binding: i as u32,
-                resource: uniform_buffer.as_entire_binding(),
-            }
-                                                                 })
+                                                                 .map(|(i, uniform_buffer)| wgpu::BindGroupEntry { binding: i as u32,
+                                                                                                                   resource: uniform_buffer.as_entire_binding() })
                                                                  .collect::<Vec<_>>();
 
         //     // create the bind group entry
@@ -223,33 +212,20 @@ impl BaseStimulus {
         //     uniform_buffers_bind_group_entries.push(uniform_buffer_bind_group_entry);
         // }
 
-        let uniform_buffer_bind_group_layout_entries =
-            uniform_buffer_bind_group_layout_entries.as_slice();
+        let uniform_buffer_bind_group_layout_entries = uniform_buffer_bind_group_layout_entries.as_slice();
 
-        let uniform_bind_group_layout =
-            device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                entries: uniform_buffer_bind_group_layout_entries,
-                label: Some("uniform_bind_group_layout"),
-            });
+        let uniform_bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { entries: uniform_buffer_bind_group_layout_entries,
+                                                                                                           label: Some("uniform_bind_group_layout") });
 
         let uniform_bind_group_entries = uniform_buffers_bind_group_entries.as_slice();
 
-        let uniform_bind_group =
-            device.create_bind_group(&wgpu::BindGroupDescriptor { layout:
-                                                                      &uniform_bind_group_layout,
-                                                                  entries:
-                                                                      uniform_bind_group_entries,
-                                                                  label:
-                                                                      Some("uniform_bind_group") });
+        let uniform_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor { layout: &uniform_bind_group_layout,
+                                                                                       entries: uniform_bind_group_entries,
+                                                                                       label: Some("uniform_bind_group") });
 
-        let transform_buffer =
-            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("Transform Buffer"),
-                contents: bytemuck::cast_slice(
-                    &nalgebra::Matrix4::<f32>::identity().as_slice(),
-                ),
-                usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-            });
+        let transform_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor { label: Some("Transform Buffer"),
+                                                                                             contents: bytemuck::cast_slice(&nalgebra::Matrix4::<f32>::identity().as_slice()),
+                                                                                             usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST });
 
         // if a texture size is specified, create a texture
         let texture = if let Some(texture_size) = texture_size {
@@ -276,139 +252,101 @@ impl BaseStimulus {
         let mut tts_bind_group_entries = vec![];
 
         // push the transformation matrix entry
-        tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry {
-            binding: 0,
-            visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
-            ty: wgpu::BindingType::Buffer {
-                ty: wgpu::BufferBindingType::Uniform,
-                has_dynamic_offset: false,
-                min_binding_size: None,
-            },
-            count: None,
-        });
+        tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry { binding: 0,
+                                                                             visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
+                                                                             ty: wgpu::BindingType::Buffer { ty: wgpu::BufferBindingType::Uniform,
+                                                                                                             has_dynamic_offset: false,
+                                                                                                             min_binding_size: None },
+                                                                             count: None });
 
         tts_bind_group_entries.push(wgpu::BindGroupEntry { binding: 0,
-                                     resource: transform_buffer.as_entire_binding() });
+                                                           resource: transform_buffer.as_entire_binding() });
 
         // if a texture is specified, create a texture buffer and a sampler and add them
         // to the bind group
-        let (tts_bind_bind_group_layout, tts_bind_group) =
-            if let Some(ref texture) = texture {
-                // create the texture view
-                let texture_view = texture.create_view(&wgpu::TextureViewDescriptor {
-                format: Some(wgpu::TextureFormat::Bgra8Unorm),
-                ..Default::default()
-            });
+        let (tts_bind_bind_group_layout, tts_bind_group) = if let Some(ref texture) = texture {
+            // create the texture view
+            let texture_view = texture.create_view(&wgpu::TextureViewDescriptor { format: Some(wgpu::TextureFormat::Bgra8Unorm),
+                                                                                  ..Default::default() });
 
-                // create the sampler
-                let texture_sampler = device.create_sampler(&wgpu::SamplerDescriptor {
-                address_mode_u: wgpu::AddressMode::ClampToEdge,
-                address_mode_v: wgpu::AddressMode::ClampToEdge,
-                address_mode_w: wgpu::AddressMode::ClampToEdge,
-                mag_filter: wgpu::FilterMode::Nearest,
-                min_filter: wgpu::FilterMode::Nearest,
-                mipmap_filter: wgpu::FilterMode::Nearest,
-                ..Default::default()
-            });
+            // create the sampler
+            let texture_sampler = device.create_sampler(&wgpu::SamplerDescriptor { address_mode_u: wgpu::AddressMode::ClampToEdge,
+                                                                                   address_mode_v: wgpu::AddressMode::ClampToEdge,
+                                                                                   address_mode_w: wgpu::AddressMode::ClampToEdge,
+                                                                                   mag_filter: wgpu::FilterMode::Nearest,
+                                                                                   min_filter: wgpu::FilterMode::Nearest,
+                                                                                   mipmap_filter: wgpu::FilterMode::Nearest,
+                                                                                   ..Default::default() });
 
-                let view_dimension = {
-                    if texture.depth_or_array_layers() > 1 {
-                        wgpu::TextureViewDimension::D2Array
-                    } else {
-                        wgpu::TextureViewDimension::D2
-                    }
-                };
-
-                // add the texture view to the bind group
-                tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry {
-                binding: 1,
-                visibility: wgpu::ShaderStages::FRAGMENT,
-                ty: wgpu::BindingType::Texture {
-                    multisampled: false,
-                    view_dimension: view_dimension,
-                    sample_type: wgpu::TextureSampleType::Float { filterable: true },
-                },
-                count: None,
-            });
-
-                // add the sampler to the bind group
-                tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry {
-                binding: 2,
-                visibility: wgpu::ShaderStages::FRAGMENT,
-                // This should match the filterable field of the
-                // corresponding Texture entry above.
-                ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
-                count: None,
-            });
-
-                tts_bind_group_entries.push(wgpu::BindGroupEntry {
-                binding: 1,
-                resource: wgpu::BindingResource::TextureView(&texture_view),
-            });
-
-                tts_bind_group_entries.push(wgpu::BindGroupEntry {
-                binding: 2,
-                resource: wgpu::BindingResource::Sampler(&texture_sampler),
-            });
-
-                // create the bind group layout for bind group 0
-                let tts_bind_bind_group_layout =
-                device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                    entries: tts_bind_bind_group_layout_entries.as_slice(),
-                    label: Some("tts_bind_bind_group_layout"),
-                });
-
-                // create the bind group for bind group 0
-                let tts_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                layout: &tts_bind_bind_group_layout,
-                entries: tts_bind_group_entries.as_slice(),
-                label: Some("tts_bind_group"),
-            });
-
-                (tts_bind_bind_group_layout, tts_bind_group)
-            } else {
-                // create the bind group layout for bind group 0
-                let tts_bind_bind_group_layout =
-                device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                    entries: tts_bind_bind_group_layout_entries.as_slice(),
-                    label: Some("tts_bind_bind_group_layout"),
-                });
-
-                // create the bind group for bind group 0
-                let tts_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                layout: &tts_bind_bind_group_layout,
-                entries: tts_bind_group_entries.as_slice(),
-                label: Some("tts_bind_group"),
-            });
-
-                (tts_bind_bind_group_layout, tts_bind_group)
+            let view_dimension = {
+                if texture.depth_or_array_layers() > 1 {
+                    wgpu::TextureViewDimension::D2Array
+                } else {
+                    wgpu::TextureViewDimension::D2
+                }
             };
 
-        let pipeline_layout =
-            device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-                label: None,
-                bind_group_layouts: &[
-                    &tts_bind_bind_group_layout,
-                    &uniform_bind_group_layout,
-                ],
-                push_constant_ranges: &[],
-            });
+            // add the texture view to the bind group
+            tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry { binding: 1,
+                                                                                 visibility: wgpu::ShaderStages::FRAGMENT,
+                                                                                 ty: wgpu::BindingType::Texture { multisampled: false,
+                                                                                                                  view_dimension: view_dimension,
+                                                                                                                  sample_type:
+                                                                                                                      wgpu::TextureSampleType::Float { filterable: true } },
+                                                                                 count: None });
+
+            // add the sampler to the bind group
+            tts_bind_bind_group_layout_entries.push(wgpu::BindGroupLayoutEntry { binding: 2,
+                                                                                 visibility: wgpu::ShaderStages::FRAGMENT,
+                                                                                 // This should match the filterable field of the
+                                                                                 // corresponding Texture entry above.
+                                                                                 ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                                                                                 count: None });
+
+            tts_bind_group_entries.push(wgpu::BindGroupEntry { binding: 1,
+                                                               resource: wgpu::BindingResource::TextureView(&texture_view) });
+
+            tts_bind_group_entries.push(wgpu::BindGroupEntry { binding: 2,
+                                                               resource: wgpu::BindingResource::Sampler(&texture_sampler) });
+
+            // create the bind group layout for bind group 0
+            let tts_bind_bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { entries: tts_bind_bind_group_layout_entries.as_slice(),
+                                                                                                                label: Some("tts_bind_bind_group_layout") });
+
+            // create the bind group for bind group 0
+            let tts_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor { layout: &tts_bind_bind_group_layout,
+                                                                                       entries: tts_bind_group_entries.as_slice(),
+                                                                                       label: Some("tts_bind_group") });
+
+            (tts_bind_bind_group_layout, tts_bind_group)
+        } else {
+            // create the bind group layout for bind group 0
+            let tts_bind_bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor { entries: tts_bind_bind_group_layout_entries.as_slice(),
+                                                                                                                label: Some("tts_bind_bind_group_layout") });
+
+            // create the bind group for bind group 0
+            let tts_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor { layout: &tts_bind_bind_group_layout,
+                                                                                       entries: tts_bind_group_entries.as_slice(),
+                                                                                       label: Some("tts_bind_group") });
+
+            (tts_bind_bind_group_layout, tts_bind_group)
+        };
+
+        let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor { label: None,
+                                                                                              bind_group_layouts: &[&tts_bind_bind_group_layout, &uniform_bind_group_layout],
+                                                                                              push_constant_ranges: &[] });
 
         let swapchain_format = TextureFormat::Bgra8Unorm;
 
         // if a texture is specified, upload the texture data
 
         // compile the vertex shader
-        let vertex_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-            label: None,
-            source: wgpu::ShaderSource::Wgsl(VERTEX_SHADER.into()),
-        });
+        let vertex_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor { label: None,
+                                                                                       source: wgpu::ShaderSource::Wgsl(VERTEX_SHADER.into()) });
 
         // compile the fragment shader
-        let fragment_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-            label: None,
-            source: wgpu::ShaderSource::Wgsl(fragment_shader_code.into()),
-        });
+        let fragment_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor { label: None,
+                                                                                         source: wgpu::ShaderSource::Wgsl(fragment_shader_code.into()) });
 
         let width_mm = window.physical_width.load_relaxed();
         let viewing_distance_mm = window.viewing_distance.load_relaxed();
@@ -419,12 +357,9 @@ impl BaseStimulus {
         let vertices = geometry.to_vertices_px(width_mm, viewing_distance_mm, width_px, height_px);
         let n_vertices = vertices.len();
 
-        let vertex_buffer =
-            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(vertices.as_slice()),
-                usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
-            });
+        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor { label: Some("Vertex Buffer"),
+                                                                                          contents: bytemuck::cast_slice(vertices.as_slice()),
+                                                                                          usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST });
 
         let render_pipeline =
             device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -463,11 +398,7 @@ impl BaseStimulus {
                          transform_buffer: Arc::new(Mutex::new(transform_buffer)),
                          n_vertices: Arc::new(AtomicUsize::new(n_vertices)),
                          texture_size: texture_size,
-                         texture: if let Some(texture) = texture {
-                             Some(Arc::new(Mutex::new(texture)))
-                         } else {
-                             None
-                         },
+                         texture: if let Some(texture) = texture { Some(Arc::new(Mutex::new(texture))) } else { None },
                          tts_bind_group: Arc::new(Mutex::new(tts_bind_group)),
                          visible: Arc::new(AtomicBool::new(true)) };
 
@@ -512,12 +443,8 @@ impl BaseStimulus {
                                                          aspect: wgpu::TextureAspect::All },
                                 data.as_slice(),
                                 wgpu::ImageDataLayout { offset: 0,
-                                                        bytes_per_row: Some(4
-                                                                            * 1
-                                                                            * texture.size()
-                                                                                     .width),
-                                                        rows_per_image: Some(texture.size()
-                                                                                    .height) },
+                                                        bytes_per_row: Some(4 * 1 * texture.size().width),
+                                                        rows_per_image: Some(texture.size().height) },
                                 texture.size());
         }
     }
@@ -566,30 +493,18 @@ impl Stimulus for BaseStimulus {
 
         let geometry = self.geometry.lock_blocking();
 
-        let vertices = geometry.to_vertices_px(screen_width_mm,
-                                               viewing_distance_mm,
-                                               screen_width_px,
-                                               screen_height_px);
+        let vertices = geometry.to_vertices_px(screen_width_mm, viewing_distance_mm, screen_width_px, screen_height_px);
 
         // update the vertex buffer
-        gpu_state.queue
-                 .write_buffer(&(self.vertex_buffer.lock_blocking()),
-                               0,
-                               bytemuck::cast_slice(&vertices));
+        gpu_state.queue.write_buffer(&(self.vertex_buffer.lock_blocking()), 0, bytemuck::cast_slice(&vertices));
 
         // update the transform buffer
-        let win_transform =
-            Window::transformation_matrix_to_ndc(screen_width_px, screen_height_px).map(|x| {
-                                                                                       x as f32
-                                                                                   });
+        let win_transform = Window::transformation_matrix_to_ndc(screen_width_px, screen_height_px).map(|x| x as f32);
 
         // then get the transformation matrix from the stimulus
         let stim_transform = self.transforms
                                  .lock_blocking()
-                                 .to_transformation_matrix(screen_width_mm,
-                                                           viewing_distance_mm,
-                                                           screen_width_px,
-                                                           screen_height_px);
+                                 .to_transformation_matrix(screen_width_mm, viewing_distance_mm, screen_width_px, screen_height_px);
 
         // multiply the two matrices
         let transform = win_transform * stim_transform.transpose();
@@ -598,9 +513,7 @@ impl Stimulus for BaseStimulus {
         let transform = transform.to_homogeneous();
 
         gpu_state.queue
-                 .write_buffer(&(self.transform_buffer.lock_blocking()),
-                               0,
-                               bytemuck::cast_slice(transform.as_slice()));
+                 .write_buffer(&(self.transform_buffer.lock_blocking()), 0, bytemuck::cast_slice(transform.as_slice()));
     }
 
     fn render(&mut self, enc: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) -> () {
@@ -617,20 +530,17 @@ impl Stimulus for BaseStimulus {
 
         let vertex_buffer = self.vertex_buffer.lock_blocking();
         {
-            let mut rpass = enc.begin_render_pass(&wgpu::RenderPassDescriptor {
-                label: None,
-                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &view,
-                    resolve_target: None,
-                    ops: wgpu::Operations {
-                        load: wgpu::LoadOp::Load,
-                        store: wgpu::StoreOp::Store,
-                    },
-                })],
-                depth_stencil_attachment: None,
-                timestamp_writes: None,
-                occlusion_query_set: None,
-            });
+            let mut rpass = enc.begin_render_pass(&wgpu::RenderPassDescriptor { label: None,
+                                                                                color_attachments:
+                                                                                    &[Some(wgpu::RenderPassColorAttachment { view: &view,
+                                                                                                                             resolve_target: None,
+                                                                                                                             ops: wgpu::Operations { load:
+                                                                                                                                                         wgpu::LoadOp::Load,
+                                                                                                                                                     store:
+                                                                                                                                                         wgpu::StoreOp::Store } })],
+                                                                                depth_stencil_attachment: None,
+                                                                                timestamp_writes: None,
+                                                                                occlusion_query_set: None });
 
             rpass.set_pipeline(&pipeline);
             rpass.set_vertex_buffer(0, vertex_buffer.slice(..));
@@ -643,7 +553,6 @@ impl Stimulus for BaseStimulus {
 
     /// Set the visibility of the stimulus.
     fn set_visible(&self, visible: bool) {
-        log::info!("Setting visibility of stimulus to {}", visible);
         self.visible.store_relaxed(visible);
     }
 

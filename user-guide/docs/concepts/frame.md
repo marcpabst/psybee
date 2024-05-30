@@ -14,7 +14,7 @@ A `Window` is an abstraction that represents the display screen on which visual 
 When an experiment is started, an `ExperimentManager` object is passed to the experiment function as the sole argument. The `ExperimentManager` object provides a method `create_default_window` that can be used to create a window with default settings.
 
 ```python
-from PsyBee import run_experiment
+from psybee import run_experiment
 
 def my_experiment(experiment_manager):
     window = experiment_manager.create_default_window()
@@ -37,7 +37,7 @@ The following window options are available:
 - `FullscreenHighestResolution`: Create a fullscreen window with the highest resolution that is supported by the monitor and matches the specified refresh rate (or default refresh rate if none is specified) on a specific monitor (or the primary monitor if none is specified). If you specify a refresh rate that is not supported by the monitor, an error will be raised.
 
 ```python
-from PsyBee import run_experiment, window_options
+from psybee import run_experiment, window_options
 
 def my_experiment(exp_manager):
     win_opts = window_options.FullscreenExact(

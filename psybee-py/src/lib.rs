@@ -203,6 +203,7 @@ impl PyWindow {
         PyEventReceiver(self.0.create_event_receiver())
     }
 
+    /// Set the visibility of the cursor.
     #[setter]
     fn set_cursor_visible(&self, visible: bool) {
         let self_wrapper = SendWrapper::new(self);
@@ -213,13 +214,22 @@ impl PyWindow {
         });
     }
 
+    /// Visible state of the cursor.
     #[getter]
     fn cursor_visible(&self) -> bool {
-        let self_wrapper = SendWrapper::new(self);
+        self.0.cursor_visible()
+    }
 
-        // get the cursor
-        // visibility
-        Python::with_gil(|py| py.allow_threads(move || self_wrapper.0.cursor_visible()))
+    /// The width of the window in pixels.
+    #[getter]
+    fn width_px(&self) -> u32 {
+        self.0.width_px()
+    }
+
+    /// The height of the window in pixels.
+    #[getter]
+    fn height_px(&self) -> u32 {
+        self.0.height_px()
     }
 }
 py_wrap!(EventReceiver);
@@ -989,6 +999,7 @@ pub enum PyEventData {
 // Handling for user input
 
 #[pymodule]
+#[pyo3(name = "psybee")]
 fn psybee_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     pyo3_log::init();
     pyo3::prepare_freethreaded_python();
@@ -998,13 +1009,13 @@ fn psybee_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyMainLoop>()?;
 
     let mod_window = PyModule::new_bound(py, "window")?;
-    //py_run!(py, mod_window, "import sys; sys.modules['window'] = mod_window");
+    py_run!(py, mod_window, "import sys; sys.modules['psybee.window'] = mod_window");
     mod_window.add_class::<PyWindowOptions>()?;
     mod_window.add_class::<PyWindow>()?;
     mod_window.add_class::<PyFrame>()?;
 
     let mod_geometry = PyModule::new_bound(py, "geometry")?;
-    //py_run!(py, mod_geometry, "import sys; sys.modules['psybee_py.geometry'] = mod_geometry");
+    py_run!(py, mod_geometry, "import sys; sys.modules['psybee.geometry'] = mod_geometry");
     mod_geometry.add_class::<PyShape>()?;
     mod_geometry.add_class::<PyRectangle>()?;
     mod_geometry.add_class::<PyCircle>()?;
@@ -1014,7 +1025,7 @@ fn psybee_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     mod_geometry.add_class::<PyScreenHeight>()?;
 
     let mod_stimuli = PyModule::new_bound(py, "stimuli")?;
-    //py_run!(py, mod_stimuli, "import sys; sys.modules['psybee_py.stimuli'] = mod_stimuli");
+    py_run!(py, mod_stimuli, "import sys; sys.modules['psybee.stimuli'] = mod_stimuli");
     mod_stimuli.add_class::<PyGaborStimulus>()?;
     mod_stimuli.add_class::<PyImageStimulus>()?;
     mod_stimuli.add_class::<PySpriteStimulus>()?;
@@ -1023,14 +1034,14 @@ fn psybee_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     mod_stimuli.add_class::<PyVideoStimulus>()?;
 
     let mod_events = PyModule::new_bound(py, "events")?;
-    //py_run!(py, mod_events, "import sys; sys.modules['psybee_py.events'] = mod_events");
+    py_run!(py, mod_events, "import sys; sys.modules['psybee.events'] = mod_events");
     mod_events.add_class::<PyEventReceiver>()?;
     mod_events.add_class::<PyEventVec>()?;
     mod_events.add_class::<PyEvent>()?;
     mod_events.add_class::<PyEventKind>()?;
 
     let mod_audio = PyModule::new_bound(py, "audio")?;
-    //py_run!(py, mod_audio, "import sys; sys.modules['psybee_py.audio'] = mod_audio");
+    py_run!(py, mod_audio, "import sys; sys.modules['psybee.audio'] = mod_audio");
     mod_audio.add_class::<PyAudioDevice>()?;
     mod_audio.add_class::<PyAudioStimulus>()?;
     mod_audio.add_class::<PySineWaveStimulus>()?;

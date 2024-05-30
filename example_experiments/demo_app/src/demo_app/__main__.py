@@ -13,17 +13,20 @@ from psybee.stimuli import GaborStimulus, ImageStimulus, SpriteStimulus
 from psybee.window import Window
 
 n_balls = 4
-n_init_steps = 10000
+n_init_steps = 100000
 
 
 def my_experiment(exp_manager: ExperimentManager) -> None:
     """Run the experiment."""  # noqa: D202
 
-    # set-up the simulation
-    sim = BubbleSimulation()
-
     # create a window
     window = exp_manager.create_default_window()
+
+    (width, height) = (window.width_px, window.height_px)
+
+    print(f"Window size: {width}x{height}")  # noqa: T201
+
+    sim = BubbleSimulation(width=width, height=height, n_balls=n_balls, n_init_steps=n_init_steps)
 
     resources = os.path.join(os.path.dirname(__file__), "resources")  # noqa: PTH118, PTH120
 
@@ -128,11 +131,5 @@ if __name__ == "__main__":
     logging.basicConfig(format=FORMAT)
     logging.getLogger().setLevel(logging.INFO)
 
-    # Create an experiment manager
-    em = MainLoop()
-
-    # Get a monitor (0 is usually the internal screen, 1 the first external monitor, etc.)
-    monitor = em.get_available_monitors()[-1]
-
     # Run the experiment
-    em.run_experiment(my_experiment)
+    MainLoop().run_experiment(my_experiment)

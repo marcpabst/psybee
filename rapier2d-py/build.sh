@@ -21,8 +21,8 @@ unzip -o ../target/wheels/rapier2d_py-0.1.0-cp38-abi3-ios_23_2_0_arm64.whl -d $T
 # rename rapier2d_py.cpython-39-darwin.so files to *.dylib and codesign them
 mv -f $TARGET_DIR/rapier2d_py/rapier2d_py.abi3.so $TARGET_DIR/rapier2d_py/rapier2d_py.abi3.dylib
 
-codesign --force --timestamp --sign 0801B5387CDC573AB560315B0C3D1C309906D961 $TARGET_DIR/rapier2d_py/rapier2d_py.abi3.dylib
-# # remove the signature
+# codesign --force --timestamp --sign 0801B5387CDC573AB560315B0C3D1C309906D961 $TARGET_DIR/rapier2d_py/rapier2d_py.abi3.dylib
+# # # remove the signature
 codesign --remove-signature $TARGET_DIR/rapier2d_py/rapier2d_py.abi3.dylib
 
 

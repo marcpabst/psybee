@@ -414,7 +414,6 @@ impl ToVertices for Rectangle {
     }
 
     fn contains(&self, window: &Window, trans: &Transformation2D, x: Size, y: Size) -> bool {
-        log::info!("Checking if rectangle contains point");
         let px = x.to_pixels(window.physical_width(), window.viewing_distance(), window.width_px(), window.height_px());
 
         let py = y.to_pixels(window.physical_width(), window.viewing_distance(), window.width_px(), window.height_px());
@@ -486,8 +485,6 @@ impl ToVertices for Circle {
     }
 
     fn contains(&self, window: &Window, trans: &Transformation2D, x: Size, y: Size) -> bool {
-        log::info!("Checking if circle contains point");
-
         let physical_width = window.physical_width();
         let viewing_distance = window.viewing_distance();
         let width_px = window.width_px();

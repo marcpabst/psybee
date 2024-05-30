@@ -1,5 +1,7 @@
 site_name: PsyBee
 site_url: https://psybee.org/
+repo_url: https://github.com/marcpabst/psybee
+repo_name: marcpabst/psybee
 
 theme:
   name: material
@@ -8,7 +10,10 @@ theme:
     - navigation.tabs
     - navigation.footer
   palette:
-    scheme: pybee
+    scheme: psybee
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/beehive-outline
 extra_css:
   - stylesheets/styles.css
 
