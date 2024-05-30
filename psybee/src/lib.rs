@@ -433,7 +433,7 @@ impl MainLoop {
 
         // print supported swapchain formats
         let swapchain_formats = surface.get_capabilities(&adapter).formats;
-        log::debug!("Supported swapchain formats: {:?}", swapchain_formats);
+        log::warn!("Supported swapchain formats: {:?}", swapchain_formats);
 
         let size = winit_window.inner_size();
 
