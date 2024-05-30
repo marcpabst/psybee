@@ -387,7 +387,7 @@ impl MainLoop {
             // create window
             winit_window = winit::window::WindowBuilder::new()
                                                               // make exclusive fullscreen
-                                                              .with_fullscreen(Some(winit::window::Fullscreen::Exclusive(video_mode)))
+                                                              .with_fullscreen(None)
                                                               .with_title("Experiment".to_string())
                                                               .build(&event_loop_target)
                                                               .unwrap();
@@ -452,9 +452,6 @@ impl MainLoop {
                                                   desired_maximum_frame_latency: 1 };
 
         log::debug!("Surface configuration: {:?}", config);
-
-        // sleep for 1s
-        std::thread::sleep(std::time::Duration::from_secs(1));
 
         surface.configure(&device, &config);
 
