@@ -713,24 +713,24 @@ impl MainLoop {
                                       }
                                   }
 
-                                  //   // handle window events
-                                  //   WinitEvent::WindowEvent { window_id: id, event } => {
-                                  //       if let Some(window) = self.get_window_by_id(id) {
-                                  //           if let Some(input) = Event::try_from_winit(event.clone(), &window).ok() {
-                                  //               // if escape key was pressed, close window
-                                  //               if input.key_pressed("\u{1b}") {
-                                  //                   win_target.exit();
-                                  //               }
+                                  // handle window events
+                                  WinitEvent::WindowEvent { window_id: id, event } => {
+                                      if let Some(window) = self.get_window_by_id(id) {
+                                          if let Some(input) = Event::try_from_winit(event.clone(), &window).ok() {
+                                              // if escape key was pressed, close window
+                                              if input.key_pressed("\u{1b}") {
+                                                  win_target.exit();
+                                              }
 
-                                  //               // broadcast event to window
-                                  //               window.event_broadcast_sender.try_broadcast(input.clone());
+                                              // broadcast event to window
+                                              window.event_broadcast_sender.try_broadcast(input.clone());
 
-                                  //               // dispatch_event to window
-                                  //               // note: this should be done in a separate thread using the winndow's event_broadcast channel
-                                  //               window.dispatch_event(input);
-                                  //           }
-                                  //       }
-                                  //   }
+                                              // dispatch_event to window
+                                              // note: this should be done in a separate thread using the winndow's event_broadcast channel
+                                              window.dispatch_event(input);
+                                          }
+                                      }
+                                  }
                                   // handle close event
                                   _ => {}
                               }
