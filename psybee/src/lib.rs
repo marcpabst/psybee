@@ -433,7 +433,7 @@ impl MainLoop {
 
         // print supported swapchain formats
         let swapchain_formats = surface.get_capabilities(&adapter).formats;
-        log::warn!("Supported swapchain formats: {:?}", swapchain_formats);
+        log::debug!("Supported swapchain formats: {:?}", swapchain_formats);
 
         let size = winit_window.inner_size();
 
@@ -450,7 +450,7 @@ impl MainLoop {
                                                   present_mode: wgpu::PresentMode::Fifo,
                                                   alpha_mode: swapchain_capabilities.alpha_modes[0],
                                                   view_formats: swapchain_view_format,
-                                                  desired_maximum_frame_latency: 1 };
+                                                  desired_maximum_frame_latency: 2 };
 
         log::debug!("Surface configuration: {:?}", config);
 
