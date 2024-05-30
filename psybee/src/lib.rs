@@ -295,7 +295,7 @@ impl MainLoop {
                 compatible_surface: None, // idealy we would use the surface here, but we don't have it yet
             })
                               .await
-                              .expect("Failed to find an appropiate graphics adapter. This is likely a bug, please report it.");
+                              .expect("Failed to find an suitable graphics adapter. This is likely a bug, please report it.");
 
         log::debug!("Selected graphics adapter: {:?}", adapter.get_info());
 
@@ -303,7 +303,7 @@ impl MainLoop {
         let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor { label: None,
                                                                                required_features: wgpu::Features::empty(),
                                                                                // Make sure we use the texture resolution limits from the adapter, so we can support images the size of the swapchain.
-                                                                               required_limits: wgpu::Limits::default().using_resolution(adapter.limits()) },
+                                                                               required_limits: wgpu::Limits::downlevel_defaults().using_resolution(adapter.limits()) },
                                                      None)
                                      .await
                                      .expect("Failed to create device. This is likely a bug, please report it.");
