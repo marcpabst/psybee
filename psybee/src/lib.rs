@@ -446,12 +446,15 @@ impl MainLoop {
                                                   format: swapchain_format,
                                                   width: size.width,
                                                   height: size.height,
-                                                  present_mode: wgpu::PresentMode::default(),
+                                                  present_mode: wgpu::PresentMode::Fifo,
                                                   alpha_mode: swapchain_capabilities.alpha_modes[0],
                                                   view_formats: swapchain_view_format,
                                                   desired_maximum_frame_latency: 1 };
 
         log::debug!("Surface configuration: {:?}", config);
+
+        // sleep for 1s
+        std::thread::sleep(std::time::Duration::from_secs(1));
 
         surface.configure(&device, &config);
 
