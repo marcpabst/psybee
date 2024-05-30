@@ -269,7 +269,6 @@ impl ExperimentManager {
 }
 
 impl MainLoop {
-    /// Create a new ExperimentManager.
     pub async fn new() -> Self {
         // create channel for sending tasks to the render thread
         let (render_task_sender, render_task_receiver) = bounded(100);
@@ -280,7 +279,7 @@ impl MainLoop {
         let backend = wgpu::Backends::all();
 
         #[cfg(target_os = "windows")]
-        let backend = wgpu::Backends::DX12;
+        let backend = wgpu::Backends::GL;
 
         let instance_desc = wgpu::InstanceDescriptor { backends: backend,
                                                        // use defaults for the rest
@@ -303,7 +302,7 @@ impl MainLoop {
         let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor { label: None,
                                                                                required_features: wgpu::Features::empty(),
                                                                                // Make sure we use the texture resolution limits from the adapter, so we can support images the size of the swapchain.
-                                                                               required_limits: wgpu::Limits::downlevel_defaults().using_resolution(adapter.limits()) },
+                                                                               required_limits: wgpu::Limits::default().using_resolution(adapter.limits()) },
                                                      None)
                                      .await
                                      .expect("Failed to create device. This is likely a bug, please report it.");
@@ -450,7 +449,7 @@ impl MainLoop {
                                                   present_mode: wgpu::PresentMode::Fifo,
                                                   alpha_mode: swapchain_capabilities.alpha_modes[0],
                                                   view_formats: swapchain_view_format,
-                                                  desired_maximum_frame_latency: 2 };
+                                                  desired_maximum_frame_latency: 1 };
 
         log::debug!("Surface configuration: {:?}", config);
 
