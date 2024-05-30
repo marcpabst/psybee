@@ -316,10 +316,7 @@ impl MainLoop {
 
     /// Create a new window with the given options.
     pub fn create_window(&self, window_options: &WindowOptions, event_loop_target: &EventLoopWindowTarget<PsyEventLoopEvent>) -> Window {
-        // set up window
-        let winit_window: winit::window::Window;
-
-        if window_options.fullscreen() {
+        let fullscreen_mode = if window_options.fullscreen() {
             // get monitor
             let monitor_handle = if let Some(monitor) = window_options.monitor() {
                 monitor.handle
@@ -385,22 +382,18 @@ impl MainLoop {
             };
 
             // create window
-            winit_window = winit::window::WindowBuilder::new()
-                                                              // make exclusive fullscreen
-                                                              .with_fullscreen(None)
-                                                              .with_title("Experiment".to_string())
-                                                              .build(&event_loop_target)
-                                                              .unwrap();
+            Some(winit::window::Fullscreen::Exclusive(video_mode))
         } else {
             // we just create a window on the specified monitor
 
-            winit_window = winit::window::WindowBuilder::new()
+            None
+        };
+
+        let winit_window = winit::window::WindowBuilder::new()
                                                               // make exclusive fullscreen
-                                                              .with_fullscreen(None)
                                                               .with_title("Experiment".to_string())
                                                               .build(&event_loop_target)
                                                               .unwrap();
-        }
 
         // make sure cursor is visible (for normlisation across platforms)
         winit_window.set_cursor_visible(true);
@@ -454,6 +447,9 @@ impl MainLoop {
         log::debug!("Surface configuration: {:?}", config);
 
         surface.configure(&device, &config);
+
+        // set fullscreen mode
+        winit_window.set_fullscreen(fullscreen_mode);
 
         // create channel for frame submission
         let (frame_sender, frame_receiver): (Sender<Arc<Mutex<Frame>>>, Receiver<Arc<Mutex<Frame>>>) = bounded(1);
