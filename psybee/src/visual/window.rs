@@ -38,6 +38,27 @@ pub struct InternalWindowState {
     pub config: wgpu::SurfaceConfiguration,
 }
 
+/// How to block when presenting a frame.
+enum BlockingStrategy {
+    /// Will render the current frame using a command buffer and submit it to the GPU, then immediately return.
+    /// Note that this may still block depending on the maximum number of frames in flight, i.e. if you submit
+    /// too many frames in short succession, this will block until the GPU has caught up with the work.
+    DoNotBlock,
+
+    // /// Will block until the previous the GPU has finished processing the previous frame. Depending on
+    // /// the platform, this may be identical to `BlockUntilVBlank`, but there is generally no guarantee
+    // /// that this will return in sync with the vertical blanking interval or the actual frame presentation.
+    // BlockUntilPreviousFrameFinished,
+    /// Will block until the vertical blanking interval at which the current frame will be presented,
+    /// then return as quickly as possible.
+    BlockUntilVBlank,
+
+    /// Will block until the vertical blanking interval at which the current frame will be presented,
+    /// then return as quickly as possible. This will also verify that the frame has been presented and
+    /// that no frame has been dropped. This is not supported on all platforms.
+    BlockUntilBVBlankVerified,
+}
+
 /// A Window represents a window on the screen. It is used to create stimuli and
 /// to submit them to the screen for rendering. Each window has a render task
 /// that is responsible for rendering stimuli to the screen.
@@ -162,7 +183,7 @@ impl Window {
     /// Submits a frame to the render task. This will in turn call the prepare()
     /// and render() functions of all renderables in the frame.
     /// This will block until the frame has been consumed by the render task.
-    pub fn submit_frame(&self, frame: Frame) {
+    pub fn present(&self, frame: Frame, blocking_strategy: BlockingStrategy) {
         let frame_sender = self.frame_channel_sender.clone();
         let frame_ok_receiver = self.frame_consumed_channel_receiver.clone();
 
@@ -400,6 +421,14 @@ pub async fn render_task(window: Window) {
 
             let suface_texture = window_state.surface.get_current_texture().expect("Failed to acquire next swap chain texture");
 
+            #[cfg(target_os = "windows")]
+            let hal_surface_callback = |sf: Option<&wgpu::hal::dx12::Surface>| {
+                let dxgi_surface = sf.unwrap();
+                let swap_chain = dxgi_surface.raw_swap_chain();
+            };
+
+            //let hal = unsafe { window_state.surface.as_hal(hal_surface_callback) }.unwrap();
+
             let view = suface_texture.texture
                                      .create_view(&wgpu::TextureViewDescriptor { format: Some(wgpu::TextureFormat::Bgra8Unorm),
                                                                                  ..wgpu::TextureViewDescriptor::default() });
@@ -437,8 +466,6 @@ pub async fn render_task(window: Window) {
             let _ = gpu_state.queue.submit(Some(encoder.finish()));
 
             suface_texture.present();
-
-            // log the time it took to render the frame
 
             // notify sender that frame has been consumed
             let _ = block_on(tx.send(true));
