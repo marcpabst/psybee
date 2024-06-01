@@ -39,7 +39,7 @@ pub struct InternalWindowState {
 }
 
 /// How to block when presenting a frame.
-enum BlockingStrategy {
+pub enum BlockingStrategy {
     /// Will render the current frame using a command buffer and submit it to the GPU, then immediately return.
     /// Note that this may still block depending on the maximum number of frames in flight, i.e. if you submit
     /// too many frames in short succession, this will block until the GPU has caught up with the work.
@@ -183,7 +183,7 @@ impl Window {
     /// Submits a frame to the render task. This will in turn call the prepare()
     /// and render() functions of all renderables in the frame.
     /// This will block until the frame has been consumed by the render task.
-    pub fn present(&self, frame: Frame, blocking_strategy: BlockingStrategy) {
+    pub fn present(&self, frame: Frame, blocking_strategy: Option<BlockingStrategy>) {
         let frame_sender = self.frame_channel_sender.clone();
         let frame_ok_receiver = self.frame_consumed_channel_receiver.clone();
 
@@ -412,6 +412,8 @@ pub async fn render_task(window: Window) {
             // wait for frame to be submitted
             let frame = rx.recv().await.unwrap();
 
+            
+
             // acquire lock on frame
             let mut frame = frame.lock_blocking();
 
@@ -421,13 +423,7 @@ pub async fn render_task(window: Window) {
 
             let suface_texture = window_state.surface.get_current_texture().expect("Failed to acquire next swap chain texture");
 
-            #[cfg(target_os = "windows")]
-            let hal_surface_callback = |sf: Option<&wgpu::hal::dx12::Surface>| {
-                let dxgi_surface = sf.unwrap();
-                let swap_chain = dxgi_surface.raw_swap_chain();
-            };
-
-            //let hal = unsafe { window_state.surface.as_hal(hal_surface_callback) }.unwrap();
+         
 
             let view = suface_texture.texture
                                      .create_view(&wgpu::TextureViewDescriptor { format: Some(wgpu::TextureFormat::Bgra8Unorm),
@@ -436,6 +432,7 @@ pub async fn render_task(window: Window) {
             let mut encoder = gpu_state.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
 
             // start timer
+           
 
             // clear the frame
             {
@@ -459,13 +456,43 @@ pub async fn render_task(window: Window) {
                     });
             }
 
+            let t_start = std::time::Instant::now();
             frame.prepare(&window, &window_state, &gpu_state).await;
+            log::warn!("Frame - Time to prepare: {:?}", t_start.elapsed());
 
+            let t_start = std::time::Instant::now();
             frame.render(&mut encoder, &view);
+            log::warn!("Frame - Time to render: {:?}", t_start.elapsed());
 
+            let t_start = std::time::Instant::now();
             let _ = gpu_state.queue.submit(Some(encoder.finish()));
+            log::warn!("Frame - Time to submit: {:?}", t_start.elapsed());
 
             suface_texture.present();
+
+            // drop window_state
+            drop(window_state);
+          
+            let mut window_state = window.write_window_state_blocking();
+
+       
+
+        //     #[cfg(target_os = "windows")]
+        //     {
+        //     let hal_surface_callback = |sf: Option<&wgpu::hal::dx12::Surface>| {
+        //         let dxgi_surface = sf.unwrap();
+        //         let swap_chain = dxgi_surface.raw_swap_chain().unwrap();
+
+        //         // get frame statistics
+        //         let mut stats = winapi::shared::dxgi::DXGI_FRAME_STATISTICS::default();
+        //         unsafe { swap_chain.GetFrameStatistics(&mut stats) };
+
+        //         // get frame statistics
+        //         log::info!("Flip count: {}", stats.SyncRefreshCount);
+        //     };
+
+        //     unsafe { &window_state.surface.as_hal::<wgpu::core::api::Dx12, _, _>(hal_surface_callback) }.unwrap();
+        // }
 
             // notify sender that frame has been consumed
             let _ = block_on(tx.send(true));
@@ -495,16 +522,27 @@ impl Frame {
 impl Frame {
     async fn prepare(&mut self, window: &Window, window_state: &InternalWindowState, gpu_state: &GPUState) -> () {
         // call prepare() on all renderables
+        
         for renderable in &mut self.stimuli.lock().await.iter_mut() {
+            //let t_start = std::time::Instant::now();
             renderable.prepare(window, window_state, gpu_state);
+            //let t_end = std::time::Instant::now();
+            //log::info!("Time to prepare sub stimuli: {:?}", t_end.duration_since(t_start));
         }
     }
 
     fn render(&mut self, enc: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) -> () {
         // call render() on all renderables
-        for renderable in &mut self.stimuli.lock_blocking().iter_mut() {
+        let t_start = std::time::Instant::now();
+        let lb = &mut self.stimuli.lock_blocking();
+       
+        for renderable in lb.iter_mut() {
+           
             renderable.render(enc, view);
+           
         }
+        //log::info!("Time to render stimuli: {:?}", t_start.elapsed());
+
     }
 }
 

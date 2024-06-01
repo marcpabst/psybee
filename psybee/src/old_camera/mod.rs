@@ -137,7 +137,7 @@ impl Camera {
             .build();
 
         // print caps
-        println!("caps: {:?}", caps);
+        log::info!("caps: {:?}", caps);
 
         capsfilter.set_property("caps", &caps);
 
@@ -304,7 +304,7 @@ impl CameraManager {
             // get properties of camera
             let device_properties = device.properties().unwrap();
             // print properties
-            println!("device properties: {:?}", device_properties);
+            log::info!("device properties: {:?}", device_properties);
 
             // stall thread for 1s
             std::thread::sleep(std::time::Duration::from_millis(1000));

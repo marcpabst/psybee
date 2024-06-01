@@ -12,7 +12,7 @@ pub mod image_stimulus;
 pub mod pattern_stimulus;
 pub mod patterns;
 pub mod sprite_stimulus;
-pub mod text_stimulus;
+
 
 #[cfg(not(any(target_arch = "wasm32", target_os = "ios")))]
 pub mod video_stimulus;

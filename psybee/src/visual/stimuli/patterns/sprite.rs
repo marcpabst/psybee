@@ -121,7 +121,7 @@ impl FillPattern for Sprite {
             let d = image.to_rgba8().to_vec();
             data.extend_from_slice(&d);
         }
-        log::debug!("Sprite texture data length: {}", data.len());
+        log::info!("Sprite texture data length: {}", data.len());
         Some(data)
     }
 
@@ -130,6 +130,7 @@ impl FillPattern for Sprite {
     }
 
     fn uniform_buffer_data(&mut self, _window: &Window) -> Option<Vec<u8>> {
+
         // if fps is set, calculate the index based on the time
         let mut index = self.current_index;
         if let Some(fps) = self.fps {
@@ -148,7 +149,7 @@ impl FillPattern for Sprite {
 
         // calculate the current index by wrapping around the number of images
         let wrapped_index = index % self.images.len() as u64;
-
+  
         Some(wrapped_index.to_ne_bytes().to_vec())
     }
 

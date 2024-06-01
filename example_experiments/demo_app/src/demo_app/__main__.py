@@ -121,7 +121,7 @@ def my_experiment(exp_manager: ExperimentManager) -> None:
         for i, stim in enumerate(ball_stims):
             stim.set_translation(Pixels(new_pos[i][0]), Pixels(new_pos[i][1]))
 
-        window.submit_frame(frame)
+        window.present(frame)
 
 
 if __name__ == "__main__":

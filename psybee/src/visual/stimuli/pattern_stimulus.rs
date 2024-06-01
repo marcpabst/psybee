@@ -194,19 +194,33 @@ impl<P: FillPattern> std::ops::Deref for PatternStimulus<P> {
 
 impl<P: FillPattern + 'static> Stimulus for PatternStimulus<P> {
     fn prepare(&mut self, window: &Window, window_state: &InternalWindowState, gpu_state: &GPUState) -> () {
+        
         // update the uniform buffer
         let mut pattern = self.pattern.lock().unwrap();
+
+        let t_start = std::time::Instant::now();
         if let Some(uniform_buffer_data) = pattern.updated_uniform_buffers_data(window) {
+            
+
+   
             self.base_stimulus.set_uniform_buffers(&[uniform_buffer_data.as_slice()], gpu_state);
+            
+        } else  {
+            
         }
 
-        // update the texture
+        //log::info!("Pattern - Time to update uniform buffer: {:?}", t_start.elapsed());
 
+        let t_start = std::time::Instant::now();
+        // update the texture
         if let Some(texture_data) = pattern.updated_texture_data(window) {
             self.base_stimulus.set_texture(texture_data, gpu_state);
         }
+        //log::info!("Pattern - Time to update texture: {:?}", t_start.elapsed());
 
+        let t_start = std::time::Instant::now();
         self.base_stimulus.prepare(window, window_state, gpu_state);
+        //log::info!("Pattern - Time to prepare base: {:?}", t_start.elapsed());
     }
 
     fn render(&mut self, enc: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) -> () {

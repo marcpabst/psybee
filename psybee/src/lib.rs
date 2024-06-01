@@ -255,8 +255,8 @@ impl ExperimentManager {
         let monitor = monitors.get(1).unwrap_or(monitors.first().expect("No monitor found - this should not happen"));
 
         log::debug!("Creating default window on monitor {:?}", monitor);
-        self.create_window(&WindowOptions::FullscreenHighestResolution { monitor: Some(monitor.clone()),
-                                                                         refresh_rate: None })
+        self.create_window(&&WindowOptions::FullscreenHighestRefreshRate { monitor: Some(monitor.clone()),
+                                                                         resolution: None })
     }
 
     /// Retrive available monitors. This reflects the state of the monitors at
@@ -279,7 +279,7 @@ impl MainLoop {
         let backend = wgpu::Backends::all();
 
         #[cfg(target_os = "windows")]
-        let backend = wgpu::Backends::DX12;
+        let backend = wgpu::Backends::VULKAN;
 
         let instance_desc = wgpu::InstanceDescriptor { backends: backend,
                                                        // use defaults for the rest
@@ -418,7 +418,7 @@ impl MainLoop {
         // let hal_surface =  unsafe { surface.as_hal::<wgpu::hal::api::Dx12, _, _>(
         //     |surface| {
         //         let surface = surface.unwrap();
-        //         println!("Surface: {:?}", surface.present_with_transaction);
+        //         log::info!("Surface: {:?}", surface.present_with_transaction);
         //     }
         // )
         // };

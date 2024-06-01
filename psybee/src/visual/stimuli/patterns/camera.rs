@@ -140,29 +140,29 @@ impl Camera {
         let pipeline_clone = pipeline.clone();
 
         std::thread::spawn(move || {
-            println!("Running...");
+            log::info!("Running...");
 
             // keep running until an error occurs
             for msg in bus.iter_timed(gst::ClockTime::NONE) {
                 use gst::MessageView;
                 match msg.view() {
                     MessageView::Eos(..) => {
-                        println!("End of stream");
+                        log::info!("End of stream");
                         break;
                     }
                     MessageView::Error(err) => {
                         pipeline.set_state(gst::State::Null).unwrap();
-                        println!("Error: {:?}", err);
+                        log::info!("Error: {:?}", err);
                     }
                     MessageView::StateChanged(s) => {
-                        println!("State changed from {:?}: {:?} -> {:?} ({:?})",
+                        log::info!("State changed from {:?}: {:?} -> {:?} ({:?})",
                                  s.src().map(|s| s.path_string()),
                                  s.old(),
                                  s.current(),
                                  s.pending());
                     }
                     _ => {
-                        println!("Other message: {:?}", msg);
+                        log::info!("Other message: {:?}", msg);
                     }
                 }
             }

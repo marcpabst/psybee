@@ -436,17 +436,7 @@ impl From<RawRgba> for wgpu::Color {
     }
 }
 
-/// Implements the From trait for RawRgba<T> to convert to a glyphon::Color.
-impl From<RawRgba> for glyphon::Color {
-    fn from(col: RawRgba) -> Self {
-        let r: f64 = col.r.into();
-        let g: f64 = col.g.into();
-        let b: f64 = col.b.into();
-        let a: f64 = col.a.into();
 
-        glyphon::Color::rgba((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8, (a * 255.0) as u8)
-    }
-}
 
 // implement ToRawRgba for SRGBA
 impl IntoRawRgba for SRGBA {

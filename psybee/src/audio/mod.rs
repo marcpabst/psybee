@@ -70,7 +70,7 @@ impl SineWaveStimulus {
 impl AudioStimulus for SineWaveStimulus {
     fn play(&mut self) -> () {
         self.sink.lock().unwrap().play();
-        println!("Playing sine wave");
+        log::info!("Playing sine wave");
     }
 
     fn stop(&mut self) -> () {
