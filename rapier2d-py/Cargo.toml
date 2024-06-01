@@ -15,3 +15,6 @@ paste = "1.0.15"
 rapier2d = "0.19.0"
 pywrap = { path = "../pywrap" }
 pyo3 = { version = "0.21.2", features = ["multiple-pymethods", "abi3-py38", "extension-module", "experimental-inspect"] }
+
+[patch.crates-io]
+wgpu-hal = { git = "https://github.com/marcpabst/wgpu/", branch = "raw_access" }

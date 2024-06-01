@@ -147,7 +147,7 @@ impl PyWindow {
     fn submit_frame(&self, frame: &PyFrame, py: Python<'_>) {
         let self_wrapper = SendWrapper::new(self);
         py.allow_threads(move || {
-              self_wrapper.0.submit_frame(frame.0.clone());
+              self_wrapper.0.present(frame.0.clone());
           });
     }
 
