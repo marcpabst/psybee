@@ -408,6 +408,8 @@ pub async fn render_task(window: Window) {
     // on native, we submit frames when they are ready
     #[cfg(not(target_arch = "wasm32"))]
     {
+
+        let flip_count = Arc::new(AtomicU32::new(0));
         loop {
             // wait for frame to be submitted
             let frame = rx.recv().await.unwrap();
@@ -477,22 +479,25 @@ pub async fn render_task(window: Window) {
 
        
 
-        //     #[cfg(target_os = "windows")]
-        //     {
-        //     let hal_surface_callback = |sf: Option<&wgpu::hal::dx12::Surface>| {
-        //         let dxgi_surface = sf.unwrap();
-        //         let swap_chain = dxgi_surface.raw_swap_chain().unwrap();
+            #[cfg(target_os = "windows")]
+            {
+                let hal_surface_callback = |sf: Option<&wgpu::hal::dx12::Surface>| {
+                    let dxgi_surface = sf.unwrap();
+                    let swap_chain = dxgi_surface.raw_swap_chain().unwrap();
 
-        //         // get frame statistics
-        //         let mut stats = winapi::shared::dxgi::DXGI_FRAME_STATISTICS::default();
-        //         unsafe { swap_chain.GetFrameStatistics(&mut stats) };
+                    // get frame statistics
+                    let mut stats = winapi::shared::dxgi::DXGI_FRAME_STATISTICS::default();
+                    unsafe { swap_chain.GetFrameStatistics(&mut stats) };
 
-        //         // get frame statistics
-        //         log::info!("Flip count: {}", stats.SyncRefreshCount);
-        //     };
+                    // get frame statistics
+                    let diff = stats.SyncRefreshCount - flip_count.load(Ordering::Relaxed);
+                    flip_count.store(stats.SyncRefreshCount, Ordering::Relaxed);
 
-        //     unsafe { &window_state.surface.as_hal::<wgpu::core::api::Dx12, _, _>(hal_surface_callback) }.unwrap();
-        // }
+                    log::warn!("Flips since last frame: {}", diff);
+                };
+
+                unsafe { &window_state.surface.as_hal::<wgpu::core::api::Dx12, _, _>(hal_surface_callback) }.unwrap();
+            }
 
             // notify sender that frame has been consumed
             let _ = block_on(tx.send(true));
