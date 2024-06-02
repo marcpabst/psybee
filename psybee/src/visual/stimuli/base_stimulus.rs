@@ -367,11 +367,13 @@ impl BaseStimulus {
                 layout: Some(&pipeline_layout),
                 vertex: wgpu::VertexState {
                     module: &vertex_shader,
+                    compilation_options: wgpu::PipelineCompilationOptions::default(),
                     entry_point: "vs_main",
                     buffers: &[Vertex::desc()],
                 },
                 fragment: Some(wgpu::FragmentState {
                     module: &fragment_shader,
+                    compilation_options: wgpu::PipelineCompilationOptions::default(),
                     entry_point: "fs_main",
                     targets: &[Some(wgpu::ColorTargetState {
                         format: swapchain_format,
@@ -383,6 +385,7 @@ impl BaseStimulus {
                 depth_stencil: None,
                 multisample: wgpu::MultisampleState::default(),
                 multiview: None,
+                cache: None,
             });
 
         // upload the texture data if a texture is specified
@@ -450,12 +453,9 @@ impl BaseStimulus {
     }
 
     pub fn set_uniform_buffers(&self, data: &[&[u8]], gpu_state: &GPUState) {
-
         let tt_start = std::time::Instant::now();
         let queue = &gpu_state.queue;
         let uniform_buffers = self.uniform_buffers.lock_blocking();
-
-      
 
         // for (i, buffer) in uniform_buffers.iter().enumerate() {
         let t_start = std::time::Instant::now();
@@ -466,9 +466,6 @@ impl BaseStimulus {
 
         log::info!("Time to write all buffers: {:?}", tt_end - tt_start);
         log::info!("Time to write buffer...: {:?}", t_end - t_start);
-    
-
-
     }
 
     pub fn set_geometry(&self, geometry: impl ToVertices + 'static) {
@@ -508,7 +505,6 @@ impl Stimulus for BaseStimulus {
 
         let vertices = geometry.to_vertices_px(screen_width_mm, viewing_distance_mm, screen_width_px, screen_height_px);
 
-
         // update the vertex buffer
         gpu_state.queue.write_buffer(&(self.vertex_buffer.lock_blocking()), 0, bytemuck::cast_slice(&vertices));
 
@@ -528,7 +524,6 @@ impl Stimulus for BaseStimulus {
 
         gpu_state.queue
                  .write_buffer(&(self.transform_buffer.lock_blocking()), 0, bytemuck::cast_slice(transform.as_slice()));
-
     }
 
     fn render(&mut self, enc: &mut wgpu::CommandEncoder, view: &wgpu::TextureView) -> () {

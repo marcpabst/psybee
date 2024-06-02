@@ -1001,9 +1001,9 @@ pub enum PyEventData {
 #[pymodule]
 #[pyo3(name = "psybee")]
 fn psybee_py(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    //pyo3_log::init();
+    pyo3_log::init();
     // init simplelog to file
-    simplelog::WriteLogger::init(simplelog::LevelFilter::Warn, simplelog::Config::default(), std::fs::File::create("C:/Users/psyphyuser/Documents/psybee.log").unwrap()).unwrap();
+    //simplelog::WriteLogger::init(simplelog::LevelFilter::Warn, simplelog::Config::default(), std::fs::File::create("C:/Users/psyphyuser/Documents/psybee.log").unwrap()).unwrap();
 
     pyo3::prepare_freethreaded_python();
 

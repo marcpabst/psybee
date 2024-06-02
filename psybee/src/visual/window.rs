@@ -414,8 +414,6 @@ pub async fn render_task(window: Window) {
             // wait for frame to be submitted
             let frame = rx.recv().await.unwrap();
 
-            
-
             // acquire lock on frame
             let mut frame = frame.lock_blocking();
 
@@ -425,8 +423,6 @@ pub async fn render_task(window: Window) {
 
             let suface_texture = window_state.surface.get_current_texture().expect("Failed to acquire next swap chain texture");
 
-         
-
             let view = suface_texture.texture
                                      .create_view(&wgpu::TextureViewDescriptor { format: Some(wgpu::TextureFormat::Bgra8Unorm),
                                                                                  ..wgpu::TextureViewDescriptor::default() });
@@ -434,7 +430,6 @@ pub async fn render_task(window: Window) {
             let mut encoder = gpu_state.device.create_command_encoder(&wgpu::CommandEncoderDescriptor { label: None });
 
             // start timer
-           
 
             // clear the frame
             {
@@ -474,7 +469,7 @@ pub async fn render_task(window: Window) {
 
             // drop window_state
             drop(window_state);
-          
+
             let mut window_state = window.write_window_state_blocking();
 
        
@@ -527,12 +522,9 @@ impl Frame {
 impl Frame {
     async fn prepare(&mut self, window: &Window, window_state: &InternalWindowState, gpu_state: &GPUState) -> () {
         // call prepare() on all renderables
-        
+
         for renderable in &mut self.stimuli.lock().await.iter_mut() {
-            //let t_start = std::time::Instant::now();
             renderable.prepare(window, window_state, gpu_state);
-            //let t_end = std::time::Instant::now();
-            //log::info!("Time to prepare sub stimuli: {:?}", t_end.duration_since(t_start));
         }
     }
 
@@ -540,14 +532,11 @@ impl Frame {
         // call render() on all renderables
         let t_start = std::time::Instant::now();
         let lb = &mut self.stimuli.lock_blocking();
-       
+
         for renderable in lb.iter_mut() {
-           
             renderable.render(enc, view);
-           
         }
         //log::info!("Time to render stimuli: {:?}", t_start.elapsed());
-
     }
 }
 
